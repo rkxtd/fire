@@ -105,6 +105,30 @@ export function ResultsSection({ results }: ResultsSectionProps) {
             <small className="muted">Retirement year / today&apos;s dollars</small>
           </div>
           <div className="insight-card">
+            <span>Children in plan</span>
+            <strong>{results.activeChildCount}</strong>
+          </div>
+          <div className="insight-card">
+            <span>Annual child cost today</span>
+            <strong>{formatCurrency(results.annualChildCostToday)}</strong>
+          </div>
+          <div className="insight-card">
+            <span>Annual 529 contributions</span>
+            <strong>{formatCurrency(results.annual529Contribution)}</strong>
+          </div>
+          <div className="insight-card">
+            <span>Projected 529 at college</span>
+            <strong>{formatCurrency(results.projected529BalanceAtCollegeStart)}</strong>
+          </div>
+          <div className="insight-card">
+            <span>Estimated college funding gap</span>
+            <strong>{formatCurrency(results.estimatedCollegeFundingGap)}</strong>
+          </div>
+          <div className="insight-card">
+            <span>Child cost through retirement</span>
+            <strong>{formatCurrency(results.childCostThroughRetirement)}</strong>
+          </div>
+          <div className="insight-card">
             <span>Estimated full retirement age</span>
             <strong>{results.fullRetirementAge}</strong>
           </div>

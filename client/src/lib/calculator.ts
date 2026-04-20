@@ -1,8 +1,28 @@
+export interface ChildPlan {
+  id: string;
+  name: string;
+  status: "born" | "planned";
+  currentAge: number;
+  yearsUntilBirth: number;
+  annualChildCost: number;
+  current529Balance: number;
+  annual529Contribution: number;
+  collegeStartAge: number;
+  collegeYears: number;
+  annualCollegeCost: number;
+}
+
 export interface CalculatorInputs {
   currentAge: number;
   targetRetirementAge: number;
   filingStatus: "single" | "married";
   annualIncome: number;
+  primaryAnnualIncome: number;
+  spouseIncluded: boolean;
+  spouseAge: number;
+  spouseAnnualIncome: number;
+  spouseRetirementAge: number;
+  children: ChildPlan[];
   currentSavings: number;
   annualContribution: number;
   annualSpending: number;
@@ -96,6 +116,12 @@ export interface CalculatorResults {
   retirementIncomeCoverage: number;
   retirementGapAfterIncome: number;
   retirementGapAfterIncomeAtRetirement: number;
+  activeChildCount: number;
+  annualChildCostToday: number;
+  annual529Contribution: number;
+  projected529BalanceAtCollegeStart: number;
+  estimatedCollegeFundingGap: number;
+  childCostThroughRetirement: number;
   fullRetirementAge: number;
   inflationMultiplierToRetirement: number;
   monteCarlo: MonteCarloSummary;
@@ -109,6 +135,12 @@ export const DEFAULT_INPUTS: CalculatorInputs = {
   targetRetirementAge: 55,
   filingStatus: "married",
   annualIncome: 150000,
+  primaryAnnualIncome: 100000,
+  spouseIncluded: true,
+  spouseAge: 35,
+  spouseAnnualIncome: 50000,
+  spouseRetirementAge: 55,
+  children: [],
   currentSavings: 180000,
   annualContribution: 32000,
   annualSpending: 60000,
@@ -365,6 +397,163 @@ function getAdjustedAnnualSpending(
   );
 }
 
+export function getCurrentHouseholdIncome(inputs: CalculatorInputs) {
+  return inputs.primaryAnnualIncome + (inputs.spouseIncluded ? inputs.spouseAnnualIncome : 0);
+}
+
+function getSpouseRetirementPrimaryAge(inputs: CalculatorInputs) {
+  if (!inputs.spouseIncluded) {
+    return inputs.targetRetirementAge;
+  }
+
+  return inputs.currentAge + Math.max(inputs.spouseRetirementAge - inputs.spouseAge, 0);
+}
+
+function getHouseholdRetirementPrimaryAge(inputs: CalculatorInputs) {
+  return Math.max(inputs.targetRetirementAge, getSpouseRetirementPrimaryAge(inputs));
+}
+
+function getWorkingIncomeForYear(inputs: CalculatorInputs, year: number) {
+  const primaryAge = inputs.currentAge + year;
+  const spouseAge = inputs.spouseAge + year;
+  const primaryIncome = primaryAge < inputs.targetRetirementAge ? inputs.primaryAnnualIncome : 0;
+  const spouseIncome =
+    inputs.spouseIncluded && spouseAge < inputs.spouseRetirementAge ? inputs.spouseAnnualIncome : 0;
+
+  return primaryIncome + spouseIncome;
+}
+
+function getChildAgeForYear(child: ChildPlan, year: number) {
+  if (child.status === "born") {
+    return child.currentAge + year;
+  }
+
+  return year - child.yearsUntilBirth;
+}
+
+function getYearsToCollege(child: ChildPlan) {
+  if (child.status === "born") {
+    return Math.max(child.collegeStartAge - child.currentAge, 0);
+  }
+
+  return child.yearsUntilBirth + child.collegeStartAge;
+}
+
+function analyzeChildren(inputs: CalculatorInputs) {
+  const annualReturn = inputs.expectedReturn / 100;
+  const inflationRate = inputs.inflationRate / 100;
+  const yearsToHouseholdRetirement = Math.max(getHouseholdRetirementPrimaryAge(inputs) - inputs.currentAge, 0);
+  let activeChildCount = 0;
+  let annualChildCostToday = 0;
+  let annual529Contribution = 0;
+  let projected529BalanceAtCollegeStart = 0;
+  let estimatedCollegeFundingGap = 0;
+  let childCostThroughRetirement = 0;
+
+  for (const child of inputs.children) {
+    const currentChildAge = child.status === "born" ? child.currentAge : -child.yearsUntilBirth;
+    if (currentChildAge >= 0 && currentChildAge < 18) {
+      activeChildCount += 1;
+      annualChildCostToday += child.annualChildCost * LOCATION_MULTIPLIERS[inputs.locationTier];
+    }
+
+    annual529Contribution += child.annual529Contribution;
+
+    const yearsToCollege = getYearsToCollege(child);
+    let projected529Balance = child.current529Balance;
+
+    for (let year = 0; year < yearsToCollege; year += 1) {
+      const childAge = getChildAgeForYear(child, year);
+      if (childAge >= 0) {
+        projected529Balance += child.annual529Contribution;
+      }
+      projected529Balance *= 1 + annualReturn;
+    }
+
+    const totalCollegeCost =
+      child.annualCollegeCost *
+      Math.max(child.collegeYears, 0) *
+      getInflationFactor(yearsToCollege, inflationRate);
+
+    projected529BalanceAtCollegeStart += projected529Balance;
+    estimatedCollegeFundingGap += Math.max(totalCollegeCost - projected529Balance, 0);
+
+    for (let year = 0; year <= yearsToHouseholdRetirement; year += 1) {
+      const childAge = getChildAgeForYear(child, year);
+      if (childAge < 0) {
+        continue;
+      }
+
+      const inflationFactor = getInflationFactor(year, inflationRate);
+      if (childAge < 18) {
+        childCostThroughRetirement +=
+          child.annualChildCost * LOCATION_MULTIPLIERS[inputs.locationTier] * inflationFactor;
+      }
+      if (childAge < child.collegeStartAge) {
+        childCostThroughRetirement += child.annual529Contribution;
+      }
+    }
+  }
+
+  return {
+    activeChildCount,
+    annualChildCostToday: roundCurrency(annualChildCostToday),
+    annual529Contribution: roundCurrency(annual529Contribution),
+    projected529BalanceAtCollegeStart: roundCurrency(projected529BalanceAtCollegeStart),
+    estimatedCollegeFundingGap: roundCurrency(estimatedCollegeFundingGap),
+    childCostThroughRetirement: roundCurrency(childCostThroughRetirement),
+  };
+}
+
+function getChildCashFlowForYear(
+  inputs: CalculatorInputs,
+  child529Balances: Map<string, number>,
+  year: number,
+) {
+  const annualReturn = inputs.expectedReturn / 100;
+  const inflationRate = inputs.inflationRate / 100;
+  const inflationFactor = getInflationFactor(year, inflationRate);
+  let livingCost = 0;
+  let contribution529 = 0;
+  let collegeGap = 0;
+
+  for (const child of inputs.children) {
+    const childAge = getChildAgeForYear(child, year);
+    if (childAge < 0) {
+      continue;
+    }
+
+    const current529Balance = (child529Balances.get(child.id) ?? child.current529Balance) * (1 + annualReturn);
+
+    if (childAge < 18) {
+      livingCost += child.annualChildCost * LOCATION_MULTIPLIERS[inputs.locationTier] * inflationFactor;
+    }
+
+    if (childAge < child.collegeStartAge) {
+      contribution529 += child.annual529Contribution;
+      child529Balances.set(child.id, current529Balance + child.annual529Contribution);
+      continue;
+    }
+
+    if (childAge < child.collegeStartAge + child.collegeYears) {
+      const collegeCost = child.annualCollegeCost * inflationFactor;
+      const coveredBy529 = Math.min(current529Balance, collegeCost);
+      child529Balances.set(child.id, current529Balance - coveredBy529);
+      collegeGap += collegeCost - coveredBy529;
+      continue;
+    }
+
+    child529Balances.set(child.id, current529Balance);
+  }
+
+  return {
+    livingCost,
+    contribution529,
+    collegeGap,
+    total: livingCost + contribution529 + collegeGap,
+  };
+}
+
 function buildScenarioSummary(inputs: CalculatorInputs): ScenarioSummary[] {
   return ([
     { style: "lean", label: "Lean" },
@@ -410,7 +599,7 @@ function runMonteCarlo(
   const meanReturn = portfolio.expectedReturn / 100;
   const volatility = portfolio.volatility / 100;
   const inflationRate = inputs.inflationRate / 100;
-  const projectionEndAge = Math.max(inputs.targetRetirementAge + 25, 95);
+  const projectionEndAge = Math.max(getHouseholdRetirementPrimaryAge(inputs) + 25, 95);
   const projectionYears = Math.max(projectionEndAge - inputs.currentAge, 1);
   const balancesByYear = Array.from({ length: projectionYears + 1 }, () => [] as number[]);
   const realBalancesByYear = Array.from({ length: projectionYears + 1 }, () => [] as number[]);
@@ -421,32 +610,36 @@ function runMonteCarlo(
   for (let run = 0; run < runs; run += 1) {
     let balance = inputs.currentSavings;
     let success = true;
+    const child529Balances = new Map(inputs.children.map((child) => [child.id, child.current529Balance]));
 
     for (let year = 0; year <= projectionYears; year += 1) {
       const age = inputs.currentAge + year;
       const inflationFactor = getInflationFactor(year, inflationRate);
       balancesByYear[year].push(balance);
       realBalancesByYear[year].push(balance / inflationFactor);
-      const contribution = age < inputs.targetRetirementAge ? inputs.annualContribution : 0;
+      const workingIncome = getWorkingIncomeForYear(inputs, year);
+      const contribution = workingIncome > 0 ? inputs.annualContribution : 0;
+      const childCashFlow = getChildCashFlowForYear(inputs, child529Balances, year);
+      const availableContribution = Math.max(contribution - childCashFlow.total, 0);
       const socialSecurityIncome = age >= inputs.socialSecurityClaimAge ? socialSecurityAnnualBenefit : 0;
       const pensionIncome = age >= inputs.pensionStartAge ? inputs.pensionAnnualBenefit : 0;
       const retirementIncome = age >= inputs.targetRetirementAge ? inputs.plannedRetirementIncome + socialSecurityIncome + pensionIncome : 0;
       const taxableIncome =
-        age < inputs.targetRetirementAge
-          ? inputs.annualIncome
+        workingIncome > 0
+          ? workingIncome
           : inputs.plannedRetirementIncome + pensionIncome + socialSecurityIncome * 0.85;
       const taxes = calculateFederalTax(taxableIncome, inputs.filingStatus);
       const spendingNeed = adjustedAnnualSpending * inflationFactor;
       const netCashFlow =
-        age < inputs.targetRetirementAge
-          ? contribution
-          : retirementIncome - taxes - spendingNeed;
+        workingIncome > 0
+          ? availableContribution
+          : retirementIncome - taxes - spendingNeed - childCashFlow.total;
       const sampledReturn = Math.max(-0.45, meanReturn + randomNormal(rng) * volatility);
 
       balance *= 1 + sampledReturn;
       balance += netCashFlow;
 
-      if (age < inputs.targetRetirementAge) {
+      if (workingIncome > 0) {
         balance += 0;
       } else if (balance < 0) {
         success = false;
@@ -501,7 +694,8 @@ export function runCalculation(inputs: CalculatorInputs): CalculatorResults {
     inputs.socialSecurityClaimAge,
     fullRetirementAge,
   );
-  const currentFederalTax = calculateFederalTax(inputs.annualIncome, inputs.filingStatus);
+  const currentHouseholdIncome = getCurrentHouseholdIncome(inputs);
+  const currentFederalTax = calculateFederalTax(currentHouseholdIncome, inputs.filingStatus);
   const retirementTaxableIncome =
     inputs.plannedRetirementIncome +
     inputs.pensionAnnualBenefit +
@@ -525,20 +719,24 @@ export function runCalculation(inputs: CalculatorInputs): CalculatorResults {
       ? Number.POSITIVE_INFINITY
       : retirementGapAfterIncomeAtRetirement / safeWithdrawalRate;
   const realReturnRate = ((1 + annualReturn) / (1 + inflationRate) - 1) * 100;
-  const savingsRate = inputs.annualIncome === 0 ? 0 : (inputs.annualContribution / inputs.annualIncome) * 100;
+  const savingsRate = currentHouseholdIncome === 0 ? 0 : (inputs.annualContribution / currentHouseholdIncome) * 100;
+  const childSummary = analyzeChildren(inputs);
 
   let balance = inputs.currentSavings;
   let ageAtFire = inputs.currentAge;
   let reachedFire = balance >= fireNumber;
-  const projectionEndAge = Math.max(inputs.targetRetirementAge + 25, 95);
+  const projectionEndAge = Math.max(getHouseholdRetirementPrimaryAge(inputs) + 25, 95);
   const projectionYears = Math.max(projectionEndAge - inputs.currentAge, 1);
   const projections: YearProjection[] = [];
+  const child529Balances = new Map(inputs.children.map((child) => [child.id, child.current529Balance]));
 
   for (let year = 0; year <= projectionYears; year += 1) {
     const age = inputs.currentAge + year;
     const inflationFactor = (1 + inflationRate) ** year;
-    const workingIncome = age < inputs.targetRetirementAge ? inputs.annualIncome : 0;
-    const contribution = age < inputs.targetRetirementAge ? inputs.annualContribution : 0;
+    const workingIncome = getWorkingIncomeForYear(inputs, year);
+    const contribution = workingIncome > 0 ? inputs.annualContribution : 0;
+    const childCashFlow = getChildCashFlowForYear(inputs, child529Balances, year);
+    const availableContribution = Math.max(contribution - childCashFlow.total, 0);
     const socialSecurityIncome = age >= inputs.socialSecurityClaimAge ? socialSecurityAnnualBenefit : 0;
     const pensionIncome = age >= inputs.pensionStartAge ? inputs.pensionAnnualBenefit : 0;
     const taxableRetirementIncome =
@@ -549,9 +747,9 @@ export function runCalculation(inputs: CalculatorInputs): CalculatorResults {
     const spendingNeed = adjustedAnnualSpending * inflationFactor;
     const retirementIncome = age >= inputs.targetRetirementAge ? inputs.plannedRetirementIncome + socialSecurityIncome + pensionIncome : 0;
     const netCashFlow =
-      age < inputs.targetRetirementAge
-        ? workingIncome - taxes - spendingNeed + contribution
-        : retirementIncome - taxes - spendingNeed;
+      workingIncome > 0
+        ? workingIncome - taxes - spendingNeed - childCashFlow.total + availableContribution
+        : retirementIncome - taxes - spendingNeed - childCashFlow.total;
 
     projections.push({
       age,
@@ -569,8 +767,8 @@ export function runCalculation(inputs: CalculatorInputs): CalculatorResults {
 
       balance = balance * (1 + annualReturn);
 
-    if (age < inputs.targetRetirementAge) {
-      balance += contribution;
+    if (workingIncome > 0) {
+      balance += availableContribution;
     } else {
       balance += netCashFlow;
     }
@@ -607,6 +805,12 @@ export function runCalculation(inputs: CalculatorInputs): CalculatorResults {
     retirementIncomeCoverage: adjustedAnnualSpending === 0 ? 100 : Number(Math.min((incomeAvailableAtRetirement / adjustedAnnualSpending) * 100, 999).toFixed(1)),
     retirementGapAfterIncome: roundCurrency(retirementGapAfterIncome),
     retirementGapAfterIncomeAtRetirement: roundCurrency(retirementGapAfterIncomeAtRetirement),
+    activeChildCount: childSummary.activeChildCount,
+    annualChildCostToday: childSummary.annualChildCostToday,
+    annual529Contribution: childSummary.annual529Contribution,
+    projected529BalanceAtCollegeStart: childSummary.projected529BalanceAtCollegeStart,
+    estimatedCollegeFundingGap: childSummary.estimatedCollegeFundingGap,
+    childCostThroughRetirement: childSummary.childCostThroughRetirement,
     fullRetirementAge: Number(fullRetirementAge.toFixed(2)),
     inflationMultiplierToRetirement: Number(inflationMultiplierToRetirement.toFixed(3)),
     monteCarlo,
