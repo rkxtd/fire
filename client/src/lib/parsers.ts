@@ -4,6 +4,14 @@ interface ParsedCsvRow {
   [key: string]: string;
 }
 
+export interface ParsedBudgetCategory {
+  name: string;
+  monthlyTarget: number;
+  annualTarget: number;
+  group: BudgetCategory["group"];
+  color: string;
+}
+
 function splitCsvLine(line: string) {
   const cells: string[] = [];
   let current = "";
@@ -187,4 +195,74 @@ export function parseCsvTransactions(csvText: string, categories: BudgetCategory
   }
 
   return transactions;
+}
+
+function inferCategoryGroup(name: string): BudgetCategory["group"] {
+  const normalized = name.toLowerCase();
+
+  if (
+    normalized.includes("rent") ||
+    normalized.includes("mortgage") ||
+    normalized.includes("housing") ||
+    normalized.includes("food") ||
+    normalized.includes("grocery") ||
+    normalized.includes("health") ||
+    normalized.includes("insurance") ||
+    normalized.includes("transport")
+  ) {
+    return "essentials";
+  }
+
+  if (
+    normalized.includes("saving") ||
+    normalized.includes("invest") ||
+    normalized.includes("debt") ||
+    normalized.includes("goal")
+  ) {
+    return "future";
+  }
+
+  return "lifestyle";
+}
+
+export function parseBudgetCategoriesCsv(csvText: string) {
+  const rows = parseCsvRows(csvText);
+  const categoryTotals = new Map<string, number>();
+
+  for (const row of rows) {
+    const groupName = getFirstPresentValue(row, ["category group", "group", "master category"]);
+    const categoryName = getFirstPresentValue(row, ["category", "category name", "name"]);
+    const combinedName = getFirstPresentValue(row, ["category group/category", "full category", "category path"]);
+    const name = combinedName || [groupName, categoryName].filter(Boolean).join(" / ") || categoryName;
+    const monthlyTarget =
+      normalizeAmount(
+        getFirstPresentValue(row, [
+          "monthly target",
+          "monthly budget",
+          "budgeted",
+          "assigned",
+          "planned",
+          "amount",
+        ]),
+      ) ?? 0;
+    const annualTarget =
+      normalizeAmount(getFirstPresentValue(row, ["annual target", "annual budget", "yearly target"])) ??
+      monthlyTarget * 12;
+
+    if (!name.trim() || (monthlyTarget <= 0 && annualTarget <= 0)) {
+      continue;
+    }
+
+    const normalizedName = name.trim();
+    const nextMonthlyTarget = monthlyTarget > 0 ? monthlyTarget : annualTarget / 12;
+    categoryTotals.set(normalizedName, (categoryTotals.get(normalizedName) ?? 0) + nextMonthlyTarget);
+  }
+
+  return Array.from(categoryTotals.entries()).map<ParsedBudgetCategory>(([name, monthlyTarget], index) => ({
+    name,
+    monthlyTarget,
+    annualTarget: monthlyTarget * 12,
+    group: inferCategoryGroup(name),
+    color: ["#2b7196", "#d9b44a", "#4d8570", "#c66a3d", "#4f6f95", "#94614a"][index % 6],
+  }));
 }
