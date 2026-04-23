@@ -15,7 +15,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 export default function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light" storageKey="retirement-calculator-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="retirement-calculator-theme">
         <TooltipProvider>
           <CalculatorProvider>
             <BudgetProvider>

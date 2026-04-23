@@ -1,27 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
-  --bg: #eef5f7;
-  --bg-soft: #f9fbf5;
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-strong: rgba(255, 255, 255, 0.94);
-  --border: rgba(32, 77, 107, 0.12);
-  --text: #153149;
-  --muted: #5f7285;
-  --accent: #dcecf3;
-  --accent-strong: #2b7196;
-  --accent-warm: #d9b44a;
-  --accent-warm-strong: #b9911b;
-  --shadow: 0 18px 42px rgba(24, 54, 77, 0.1);
+  color-scheme: dark;
+  --bg: #06101a;
+  --bg-soft: #0b1624;
+  --surface: rgba(12, 19, 30, 0.84);
+  --surface-strong: rgba(15, 23, 36, 0.96);
+  --surface-card: rgba(20, 30, 46, 0.84);
+  --surface-soft: rgba(12, 17, 28, 0.78);
+  --surface-accent: rgba(86, 182, 255, 0.1);
+  --border: rgba(126, 154, 196, 0.14);
+  --border-strong: rgba(126, 154, 196, 0.22);
+  --text: #eef6ff;
+  --muted: #8fa3bc;
+  --accent: #102036;
+  --accent-strong: #56b6ff;
+  --accent-warm: #f0c86b;
+  --accent-warm-strong: #f7dc92;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
   font-family: "DM Sans", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(217, 180, 74, 0.18), transparent 22%),
-    radial-gradient(circle at top right, rgba(43, 113, 150, 0.16), transparent 28%),
-    linear-gradient(180deg, #f9fcfd 0%, #edf4f6 56%, #f7f9f2 100%);
+    radial-gradient(circle at top left, rgba(86, 182, 255, 0.18), transparent 24%),
+    radial-gradient(circle at top right, rgba(240, 200, 107, 0.11), transparent 22%),
+    radial-gradient(circle at bottom center, rgba(24, 58, 99, 0.28), transparent 30%),
+    linear-gradient(180deg, #07111a 0%, #09131d 44%, #0d1723 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -37,6 +42,9 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(86, 182, 255, 0.1), transparent 22%),
+    linear-gradient(180deg, #07111a 0%, #0c1621 100%);
 }
 
 button,
@@ -65,18 +73,23 @@ button {
 }
 
 .screen {
-  width: min(1180px, calc(100vw - 2rem));
+  width: min(1240px, calc(100vw - 2rem));
   margin: 0 auto;
-  padding: 2rem 0 3rem;
+  padding: 1.2rem 0 2.2rem;
 }
 
 .app-topbar {
+  position: sticky;
+  top: 0.8rem;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.25rem;
+  padding: 0.7rem 0.8rem;
+  margin-bottom: 0.9rem;
+  background: linear-gradient(180deg, rgba(13, 21, 33, 0.94), rgba(10, 16, 27, 0.86));
+  border-color: var(--border-strong);
 }
 
 .brand-link {
@@ -100,8 +113,8 @@ button {
   width: 2.45rem;
   height: 2.45rem;
   border-radius: 16px;
-  background: linear-gradient(145deg, var(--accent-strong), #205976);
-  color: white;
+  background: linear-gradient(145deg, var(--accent-strong), #226895);
+  color: #03111d;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -120,23 +133,27 @@ button {
   border-radius: 999px;
   color: var(--muted);
   text-decoration: none;
-  padding: 0.65rem 0.85rem;
-  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+  padding: 0.58rem 0.82rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease, border-color 140ms ease;
 }
 
 .nav-link:hover {
   transform: translateY(-1px);
   color: var(--accent-strong);
+  background: rgba(86, 182, 255, 0.06);
 }
 
 .nav-link.is-active {
-  background: rgba(43, 113, 150, 0.12);
+  background: rgba(86, 182, 255, 0.11);
+  border-color: rgba(86, 182, 255, 0.16);
   color: var(--accent-strong);
 }
 
 .page-shell {
   display: grid;
-  gap: 1.25rem;
+  gap: 0.9rem;
 }
 
 .corner-vault-button {
@@ -145,11 +162,11 @@ button {
   right: 1.3rem;
   width: 3.35rem;
   height: 3.35rem;
-  border: 1px solid rgba(32, 77, 107, 0.12);
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(232, 241, 245, 0.96));
+  background: linear-gradient(180deg, rgba(20, 30, 46, 0.96), rgba(10, 18, 30, 0.96));
   color: var(--accent-strong);
-  box-shadow: 0 16px 28px rgba(24, 54, 77, 0.14);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.34);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -159,15 +176,15 @@ button {
 
 .corner-vault-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 18px 32px rgba(24, 54, 77, 0.18);
-  border-color: rgba(43, 113, 150, 0.22);
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.38);
+  border-color: rgba(86, 182, 255, 0.22);
 }
 
 .save-modal-backdrop {
   position: fixed;
   inset: 0;
   padding: 5.25rem 1rem 1rem;
-  background: rgba(16, 31, 43, 0.28);
+  background: rgba(3, 7, 13, 0.58);
   backdrop-filter: blur(10px);
   display: grid;
   align-items: start;
@@ -203,7 +220,7 @@ button {
   height: 2.5rem;
   border: 0;
   border-radius: 999px;
-  background: rgba(43, 113, 150, 0.12);
+  background: rgba(86, 182, 255, 0.1);
   color: var(--accent-strong);
   display: inline-flex;
   align-items: center;
@@ -220,8 +237,8 @@ button {
 .save-modal-card {
   padding: 1.2rem;
   border-radius: 24px;
-  border: 1px solid rgba(32, 77, 107, 0.08);
-  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   display: grid;
   gap: 0.85rem;
 }
@@ -236,14 +253,14 @@ button {
 .landing-shell,
 .onboarding-shell {
   display: grid;
-  gap: 1.25rem;
+  gap: 0.9rem;
 }
 
 .landing-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.8fr);
-  gap: 1.5rem;
-  padding: 2rem;
+  gap: 1rem;
+  padding: 1.35rem;
 }
 
 .landing-copy h1 {
@@ -257,8 +274,8 @@ button {
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 1.4rem;
+  gap: 0.65rem;
+  margin-top: 1rem;
 }
 
 .landing-primary-button,
@@ -278,14 +295,14 @@ button {
 }
 
 .landing-primary-button {
-  background: linear-gradient(180deg, var(--accent-strong), #205976);
-  color: white;
-  box-shadow: 0 14px 28px rgba(43, 113, 150, 0.2);
+  background: linear-gradient(180deg, #63c0ff, #2f8ed0);
+  color: #03111d;
+  box-shadow: 0 14px 24px rgba(3, 7, 13, 0.3);
 }
 
 .landing-secondary-button {
-  background: rgba(217, 180, 74, 0.18);
-  color: #7a6415;
+  background: rgba(240, 200, 107, 0.12);
+  color: var(--accent-warm-strong);
 }
 
 .landing-notes {
@@ -300,8 +317,8 @@ button {
 .landing-notes span {
   padding: 0.5rem 0.8rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(32, 77, 107, 0.08);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
+  border: 1px solid var(--border);
 }
 
 .landing-summary {
@@ -311,8 +328,8 @@ button {
 
 .landing-summary-card {
   border-radius: 24px;
-  border: 1px solid rgba(32, 77, 107, 0.08);
-  background: rgba(255, 255, 255, 0.48);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 1rem 1.1rem;
   display: grid;
   gap: 0.3rem;
@@ -339,15 +356,15 @@ button {
   padding: 1.2rem;
   display: grid;
   align-content: start;
-  gap: 0.65rem;
+  gap: 0.45rem;
   min-height: 190px;
   transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
 .route-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(43, 113, 150, 0.22);
-  box-shadow: 0 20px 38px rgba(24, 54, 77, 0.14);
+  border-color: rgba(86, 182, 255, 0.2);
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.28);
 }
 
 .route-card svg {
@@ -374,7 +391,7 @@ button {
 
 .onboarding-header,
 .wizard-footer {
-  padding: 1.4rem 1.5rem;
+  padding: 1.1rem 1.2rem;
 }
 
 .onboarding-header-top {
@@ -406,15 +423,15 @@ button {
 .wizard-progress {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-top: 1rem;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
 }
 
 .wizard-step-chip {
-  border: 1px solid rgba(32, 77, 107, 0.08);
-  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   border-radius: 20px;
-  padding: 0.9rem;
+  padding: 0.75rem;
   display: grid;
   gap: 0.3rem;
   text-align: left;
@@ -424,7 +441,7 @@ button {
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 999px;
-  background: rgba(43, 113, 150, 0.1);
+  background: rgba(86, 182, 255, 0.12);
   color: var(--accent-strong);
   display: inline-flex;
   align-items: center;
@@ -438,12 +455,12 @@ button {
 }
 
 .wizard-step-chip.is-active {
-  border-color: rgba(43, 113, 150, 0.24);
-  background: rgba(43, 113, 150, 0.08);
+  border-color: rgba(86, 182, 255, 0.22);
+  background: rgba(86, 182, 255, 0.09);
 }
 
 .wizard-step-chip.is-complete span {
-  background: rgba(217, 180, 74, 0.2);
+  background: rgba(240, 200, 107, 0.18);
   color: var(--accent-warm-strong);
 }
 
@@ -468,7 +485,7 @@ button {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .wizard-footer-note {
@@ -478,21 +495,21 @@ button {
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
-  gap: 1.25rem;
+  gap: 0.9rem;
   align-items: stretch;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.9rem;
 }
 
 .panel {
   backdrop-filter: blur(18px);
   background: linear-gradient(180deg, var(--surface-strong), var(--surface));
   border: 1px solid var(--border);
-  border-radius: 28px;
+  border-radius: 22px;
   box-shadow: var(--shadow);
 }
 
 .hero-copy {
-  padding: 2rem;
+  padding: 1.35rem;
 }
 
 .hero-copy h1 {
@@ -507,7 +524,7 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 2rem;
+  padding: 1.2rem;
 }
 
 .hero-stat-row {
@@ -545,13 +562,13 @@ button {
 
 .wizard-shell {
   display: grid;
-  gap: 1.25rem;
+  gap: 0.9rem;
 }
 
 .wizard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
+  gap: 0.9rem;
 }
 
 .form-panel,
@@ -583,7 +600,7 @@ button {
 .results-layout {
   display: grid;
   grid-template-columns: minmax(250px, 0.45fr) minmax(0, 1fr);
-  gap: 1.25rem;
+  gap: 0.9rem;
 }
 
 .input-grid {
@@ -616,8 +633,8 @@ button {
   width: 100%;
   padding: 0.9rem 1rem;
   border-radius: 18px;
-  border: 1px solid rgba(41, 55, 74, 0.12);
-  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  background: rgba(8, 13, 21, 0.92);
   color: var(--text);
 }
 
@@ -625,19 +642,19 @@ button {
   width: 100%;
   padding: 0.9rem 1rem;
   border-radius: 18px;
-  border: 1px solid rgba(41, 55, 74, 0.12);
-  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  background: rgba(8, 13, 21, 0.92);
   color: var(--text);
 }
 
 .input-group input:focus {
-  outline: 2px solid rgba(15, 107, 136, 0.22);
-  border-color: rgba(15, 107, 136, 0.4);
+  outline: 2px solid rgba(86, 182, 255, 0.16);
+  border-color: rgba(86, 182, 255, 0.3);
 }
 
 .input-group select:focus {
-  outline: 2px solid rgba(15, 107, 136, 0.22);
-  border-color: rgba(15, 107, 136, 0.4);
+  outline: 2px solid rgba(86, 182, 255, 0.16);
+  border-color: rgba(86, 182, 255, 0.3);
 }
 
 .section-head {
@@ -651,13 +668,13 @@ button {
 .section-head h2 {
   margin: 0;
   font-family: "DM Serif Display", serif;
-  font-size: 1.7rem;
+  font-size: 1.45rem;
 }
 
 .secondary-button {
   border: 0;
   border-radius: 999px;
-  background: rgba(43, 113, 150, 0.12);
+  background: rgba(86, 182, 255, 0.1);
   color: var(--accent-strong);
   padding: 0.7rem 1rem;
   min-height: 44px;
@@ -674,9 +691,9 @@ button {
 }
 
 .section-panel {
-  padding: 1.5rem;
+  padding: 1.1rem;
   display: grid;
-  gap: 1.15rem;
+  gap: 0.8rem;
 }
 
 .section-copy h2 {
@@ -697,9 +714,9 @@ button {
 
 .choice-chip,
 .section-chip {
-  border: 1px solid rgba(41, 55, 74, 0.1);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.64);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   color: var(--text);
   padding: 0.7rem 1rem;
   min-height: 44px;
@@ -708,8 +725,8 @@ button {
 
 .choice-chip.is-active,
 .strategy-card.is-active {
-  border-color: rgba(15, 107, 136, 0.32);
-  background: rgba(15, 107, 136, 0.08);
+  border-color: rgba(86, 182, 255, 0.26);
+  background: rgba(86, 182, 255, 0.11);
 }
 
 .toggle-card {
@@ -717,8 +734,8 @@ button {
   align-items: center;
   gap: 0.7rem;
   border-radius: 18px;
-  border: 1px solid rgba(41, 55, 74, 0.1);
-  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 0.8rem 1rem;
   color: var(--text);
   min-height: 44px;
@@ -734,8 +751,8 @@ button {
 
 .household-income-summary {
   border-radius: 20px;
-  border: 1px solid rgba(43, 113, 150, 0.12);
-  background: rgba(43, 113, 150, 0.07);
+  border: 1px solid rgba(86, 182, 255, 0.2);
+  background: rgba(86, 182, 255, 0.08);
   padding: 1rem;
 }
 
@@ -760,8 +777,8 @@ button {
 
 .child-card {
   border-radius: 24px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 1rem;
   display: grid;
   gap: 0.9rem;
@@ -779,7 +796,7 @@ button {
 }
 
 .section-chip {
-  background: rgba(255, 255, 255, 0.56);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
 }
 
 .strategy-grid {
@@ -789,8 +806,8 @@ button {
 }
 
 .strategy-card {
-  border: 1px solid rgba(41, 55, 74, 0.1);
-  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   border-radius: 22px;
   padding: 1rem;
   display: grid;
@@ -811,7 +828,7 @@ button {
 }
 
 .note-strip {
-  border-left: 3px solid rgba(15, 107, 136, 0.22);
+  border-left: 3px solid rgba(86, 182, 255, 0.26);
   padding-left: 0.85rem;
   font-size: 0.95rem;
 }
@@ -823,8 +840,8 @@ button {
 .hero-summary-card,
 .insight-card {
   flex: 1 1 160px;
-  background: rgba(255, 255, 255, 0.48);
-  border: 1px solid rgba(41, 55, 74, 0.08);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 0.95rem 1rem;
   display: grid;
@@ -857,8 +874,8 @@ button {
 
 .scenario-card {
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.44);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 1rem;
   display: grid;
   gap: 0.3rem;
@@ -876,8 +893,8 @@ button {
 .allocation-card,
 .monte-carlo-card {
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.44);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
 }
 
 .allocation-card {
@@ -954,8 +971,8 @@ button {
 
 .budget-onboarding-card {
   border-radius: 24px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 1rem;
   display: grid;
   gap: 0.75rem;
@@ -963,8 +980,8 @@ button {
 }
 
 .budget-onboarding-card.is-active {
-  border-color: rgba(43, 113, 150, 0.22);
-  background: rgba(43, 113, 150, 0.07);
+  border-color: rgba(86, 182, 255, 0.22);
+  background: rgba(86, 182, 255, 0.08);
 }
 
 .budget-onboarding-card svg {
@@ -997,8 +1014,8 @@ button {
 
 .summary-tile {
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 1rem;
   display: grid;
   gap: 0.35rem;
@@ -1049,8 +1066,8 @@ button {
 .goal-row,
 .storage-card {
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 0.8rem;
 }
 
@@ -1114,8 +1131,8 @@ button {
   min-width: 0;
   padding: 0.78rem 0.9rem;
   border-radius: 16px;
-  border: 1px solid rgba(41, 55, 74, 0.12);
-  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--border);
+  background: rgba(8, 13, 21, 0.92);
   color: var(--text);
 }
 
@@ -1148,8 +1165,8 @@ button {
   gap: 0.65rem;
   align-items: center;
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 0.8rem;
 }
 
@@ -1159,8 +1176,8 @@ button {
   gap: 0.65rem;
   align-items: center;
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 0.8rem;
 }
 
@@ -1201,11 +1218,11 @@ button {
 }
 
 .forecast-good {
-  color: #2f614d;
+  color: #9ed0b8;
 }
 
 .forecast-risk {
-  color: #8f4925;
+  color: #f2b1a5;
 }
 
 .tiny-toggle {
@@ -1223,7 +1240,7 @@ button {
 .icon-button {
   border: 0;
   border-radius: 16px;
-  background: rgba(15, 107, 136, 0.12);
+  background: rgba(86, 182, 255, 0.1);
   color: var(--accent-strong);
   width: 42px;
   height: 42px;
@@ -1233,7 +1250,7 @@ button {
 }
 
 .icon-button.subtle {
-  background: rgba(198, 106, 61, 0.12);
+  background: rgba(225, 111, 94, 0.12);
   color: var(--accent-warm);
 }
 
@@ -1257,8 +1274,8 @@ button {
   gap: 0.65rem;
   align-items: center;
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 0.8rem;
 }
 
@@ -1298,16 +1315,16 @@ button {
 .saved-scenario-card,
 .compare-card {
   border-radius: 22px;
-  border: 1px solid rgba(41, 55, 74, 0.08);
-  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(22, 32, 48, 0.92), rgba(13, 19, 31, 0.82));
   padding: 1rem;
   display: grid;
   gap: 0.75rem;
 }
 
 .saved-scenario-card.is-selected {
-  border-color: rgba(15, 107, 136, 0.28);
-  background: rgba(15, 107, 136, 0.07);
+  border-color: rgba(86, 182, 255, 0.22);
+  background: rgba(86, 182, 255, 0.08);
 }
 
 .saved-scenario-top {
@@ -1364,7 +1381,7 @@ button {
 
 .empty-state {
   border-radius: 22px;
-  border: 1px dashed rgba(41, 55, 74, 0.18);
+  border: 1px dashed var(--border-strong);
   padding: 1rem;
 }
 
@@ -1387,7 +1404,7 @@ button {
   gap: 0.45rem;
   border-radius: 999px;
   padding: 0.55rem 0.85rem;
-  background: rgba(15, 107, 136, 0.1);
+  background: rgba(86, 182, 255, 0.1);
   color: var(--accent-strong);
 }
 
@@ -1405,18 +1422,18 @@ button {
 }
 
 .action-button {
-  background: var(--accent-strong);
-  color: white;
+  background: linear-gradient(180deg, #63c0ff, #2f8ed0);
+  color: #04111b;
 }
 
 .secondary-action-button {
-  background: rgba(43, 113, 150, 0.12);
+  background: rgba(86, 182, 255, 0.1);
   color: var(--accent-strong);
 }
 
 .danger-button {
-  background: rgba(198, 106, 61, 0.14);
-  color: #8f4925;
+  background: rgba(225, 111, 94, 0.14);
+  color: #f5a899;
 }
 
 .action-button:disabled,
@@ -1433,13 +1450,130 @@ button {
 }
 
 .status-message {
-  background: rgba(77, 133, 112, 0.12);
-  color: #2f614d;
+  background: rgba(71, 139, 104, 0.14);
+  color: #9ed0b8;
 }
 
 .error-message {
-  background: rgba(198, 106, 61, 0.12);
-  color: #8f4925;
+  background: rgba(225, 111, 94, 0.14);
+  color: #f2b1a5;
+}
+
+.goal-progress-shell {
+  padding: 1rem 1.1rem;
+  display: grid;
+  gap: 0.8rem;
+  border-color: rgba(86, 182, 255, 0.16);
+}
+
+.goal-progress-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.goal-progress-top h2 {
+  margin: 0.25rem 0 0;
+  font-family: "DM Serif Display", serif;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+}
+
+.goal-progress-summary {
+  display: grid;
+  gap: 0.12rem;
+  justify-items: end;
+  text-align: right;
+}
+
+.goal-progress-summary span,
+.goal-progress-summary small {
+  color: var(--muted);
+}
+
+.goal-progress-summary strong {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.2rem;
+}
+
+.goal-track {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(10, 16, 26, 0.98), rgba(25, 34, 49, 0.86));
+  border: 1px solid var(--border);
+  overflow: visible;
+}
+
+.goal-track-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #56b6ff 0%, #78d0ff 38%, #f0c86b 100%);
+  box-shadow: 0 0 18px rgba(86, 182, 255, 0.28);
+}
+
+.goal-track-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+}
+
+.goal-track-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  border: 2px solid var(--accent-warm);
+  box-shadow: 0 0 0 4px rgba(240, 200, 107, 0.1);
+}
+
+.goal-track-tooltip {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  min-width: 88px;
+  border-radius: 14px;
+  padding: 0.45rem 0.55rem;
+  background: rgba(9, 13, 20, 0.96);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 0.08rem;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.28);
+}
+
+.goal-track-tooltip strong {
+  font-size: 0.8rem;
+}
+
+.goal-track-tooltip small {
+  color: var(--muted);
+}
+
+.goal-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.goal-progress-card {
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(14, 20, 31, 0.94), rgba(10, 15, 24, 0.86));
+  padding: 0.8rem 0.85rem;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.goal-progress-card span,
+.goal-progress-card small {
+  color: var(--muted);
+}
+
+.goal-progress-card strong {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.18rem;
 }
 
 @media (max-width: 960px) {
@@ -1542,6 +1676,24 @@ button {
   .form-panel,
   .chart-panel {
     padding: 1.15rem;
+  }
+
+  .goal-progress-top {
+    flex-direction: column;
+  }
+
+  .goal-progress-summary {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .goal-progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-track-tooltip {
+    min-width: 72px;
+    padding: 0.35rem 0.45rem;
   }
 
   .input-grid {

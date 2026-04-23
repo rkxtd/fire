@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
+import { GoalProgressBar } from "@/components/GoalProgressBar";
 import { MortgageCalculatorPanel } from "@/components/MortgageCalculatorPanel";
 import { ScenarioPanel } from "@/components/ScenarioPanel";
 import { FireStrategySection } from "@/components/sections/FireStrategySection";
@@ -87,6 +88,15 @@ function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function getCoastFireTarget(currentFireNumber: number, realReturnRate: number, yearsToRetirement: number) {
+  const realReturn = realReturnRate / 100;
+  if (yearsToRetirement <= 0 || realReturn <= -0.99) {
+    return currentFireNumber;
+  }
+
+  return currentFireNumber / (1 + realReturn) ** yearsToRetirement;
+}
+
 export function FirePage() {
   const { inputs, setInput, reset } = useCalculator();
   const { annualSpendingFromBudget } = useBudget();
@@ -94,6 +104,7 @@ export function FirePage() {
   const [wizardOpen, setWizardOpen] = useState(initialUiState.wizardOpen);
   const [wizardStep, setWizardStep] = useState(initialUiState.wizardStep);
   const currentStep = WIZARD_STEPS[wizardStep];
+  const yearsToRetirement = Math.max(inputs.targetRetirementAge - inputs.currentAge, 0);
   const results = useMemo(
     () =>
       runCalculation({
@@ -102,6 +113,31 @@ export function FirePage() {
       }),
     [annualSpendingFromBudget, inputs],
   );
+  const fatScenario = results.scenarios.find((scenario) => scenario.style === "fat");
+  const coastFireTarget = getCoastFireTarget(results.fireNumber, results.realReturnRate, yearsToRetirement);
+  const milestones = [
+    {
+      label: "Coast FIRE",
+      shortLabel: "Coast",
+      target: coastFireTarget,
+      progress: coastFireTarget === 0 ? 100 : (inputs.currentSavings / coastFireTarget) * 100,
+    },
+    {
+      label: "Classic FIRE",
+      shortLabel: "FIRE",
+      target: results.fireNumber,
+      progress: results.fireProgress,
+    },
+    {
+      label: "Fat FIRE",
+      shortLabel: "Fat",
+      target: fatScenario?.fireNumber ?? results.fireNumber,
+      progress:
+        fatScenario && fatScenario.fireNumber > 0
+          ? (inputs.currentSavings / fatScenario.fireNumber) * 100
+          : results.fireProgress,
+    },
+  ];
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -215,6 +251,8 @@ export function FirePage() {
 
   return (
     <>
+      <GoalProgressBar currentSavings={inputs.currentSavings} milestones={milestones} />
+
       <motion.section
         className="hero"
         initial={{ opacity: 0, y: 18 }}
