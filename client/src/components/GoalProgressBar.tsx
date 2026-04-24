@@ -46,8 +46,9 @@ export function GoalProgressBar({ currentSavings, milestones }: GoalProgressBarP
         <div className="goal-track-fill" style={{ width: `${totalFill}%` }} />
         {validMilestones.map((milestone) => {
           const left = Math.min((milestone.target / farthestTarget) * 100, 100);
+          const markerEdgeClass = left <= 4 ? "is-start" : left >= 96 ? "is-end" : "";
           return (
-            <div className="goal-track-marker" key={milestone.label} style={{ left: `${left}%` }}>
+            <div className={`goal-track-marker ${markerEdgeClass}`} key={milestone.label} style={{ left: `${left}%` }}>
               <span className="goal-track-dot" />
               <div className="goal-track-tooltip">
                 <strong>{milestone.shortLabel}</strong>

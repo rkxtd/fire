@@ -211,7 +211,7 @@ button {
 .save-modal-header h2 {
   margin: 0.25rem 0 0.45rem;
   font-family: "DM Serif Display", serif;
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-size: 2.25rem;
   line-height: 1;
 }
 
@@ -265,10 +265,11 @@ button {
 
 .landing-copy h1 {
   font-family: "DM Serif Display", serif;
-  font-size: clamp(2.7rem, 5vw, 4.8rem);
+  font-size: 4rem;
   line-height: 0.98;
   margin: 0.35rem 0 1rem;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
+  text-wrap: balance;
 }
 
 .landing-actions {
@@ -404,7 +405,7 @@ button {
 .onboarding-header-top h1 {
   margin: 0.3rem 0 0.45rem;
   font-family: "DM Serif Display", serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: 2.75rem;
   line-height: 1;
 }
 
@@ -514,10 +515,12 @@ button {
 
 .hero-copy h1 {
   font-family: "DM Serif Display", serif;
-  font-size: clamp(2.5rem, 4vw, 4.4rem);
+  font-size: 3.25rem;
   line-height: 1.02;
   margin: 0.25rem 0 1rem;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .hero-stat {
@@ -536,7 +539,7 @@ button {
 
 .hero-number {
   font-family: "JetBrains Mono", monospace;
-  font-size: clamp(3rem, 7vw, 5rem);
+  font-size: 4.25rem;
   line-height: 1;
   margin: 0.5rem 0;
   color: var(--accent-strong);
@@ -1471,12 +1474,20 @@ button {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+  min-width: 0;
+}
+
+.goal-progress-top > div:first-child {
+  min-width: 0;
 }
 
 .goal-progress-top h2 {
   margin: 0.25rem 0 0;
   font-family: "DM Serif Display", serif;
-  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-size: 1.75rem;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .goal-progress-summary {
@@ -1484,6 +1495,8 @@ button {
   gap: 0.12rem;
   justify-items: end;
   text-align: right;
+  min-width: 220px;
+  max-width: 320px;
 }
 
 .goal-progress-summary span,
@@ -1499,6 +1512,7 @@ button {
 .goal-track {
   position: relative;
   height: 14px;
+  margin: 0.2rem 0 2.7rem;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(10, 16, 26, 0.98), rgba(25, 34, 49, 0.86));
   border: 1px solid var(--border);
@@ -1521,6 +1535,14 @@ button {
   justify-items: center;
 }
 
+.goal-track-marker.is-start {
+  transform: translate(0, -50%);
+}
+
+.goal-track-marker.is-end {
+  transform: translate(-100%, -50%);
+}
+
 .goal-track-dot {
   width: 12px;
   height: 12px;
@@ -1533,6 +1555,8 @@ button {
 .goal-track-tooltip {
   position: absolute;
   top: calc(100% + 0.7rem);
+  left: 50%;
+  transform: translateX(-50%);
   min-width: 88px;
   border-radius: 14px;
   padding: 0.45rem 0.55rem;
@@ -1541,6 +1565,17 @@ button {
   display: grid;
   gap: 0.08rem;
   box-shadow: 0 18px 30px rgba(0, 0, 0, 0.28);
+}
+
+.goal-track-marker.is-start .goal-track-tooltip {
+  left: 0;
+  transform: none;
+}
+
+.goal-track-marker.is-end .goal-track-tooltip {
+  right: 0;
+  left: auto;
+  transform: none;
 }
 
 .goal-track-tooltip strong {
@@ -1685,6 +1720,8 @@ button {
   .goal-progress-summary {
     justify-items: start;
     text-align: left;
+    min-width: 0;
+    max-width: none;
   }
 
   .goal-progress-grid {
@@ -1746,13 +1783,29 @@ button {
     padding-right: 3.5rem;
   }
 
-  .landing-copy h1,
+  .save-modal-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .landing-copy h1 {
+    font-size: 2.65rem;
+  }
+
+  .onboarding-header-top h1 {
+    font-size: 2.1rem;
+  }
+
   .hero-copy h1 {
-    letter-spacing: -0.03em;
+    font-size: 2.15rem;
+  }
+
+  .goal-progress-top h2 {
+    font-size: 1.35rem;
   }
 
   .hero-number {
-    font-size: clamp(2.6rem, 18vw, 4rem);
+    font-size: 2.8rem;
+    overflow-wrap: anywhere;
   }
 
   .chart-shell {
